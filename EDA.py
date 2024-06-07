@@ -19,9 +19,38 @@ def plot_sensor(df: pd.DataFrame, sensor: str):
     plt.legend(columns)
     plt.show()
 
+def statistics_over_set(data: list, sensor: str, activity: str):
+    """
+    Prints statistics over a set of data for a given sensor and activity
+    Returns dataframe, where index (e.g. result['mean']) prints the statistic for each dataset,
+    only showing the columns related to the sensor. Only shows the data for the given activity
+    Args:
+        data: list of DataFrames
+        sensor: sensor to describe
+        activity: type of activity (e.g. walk, run, etc.)
+    """
+    columns = [col for col in data[0].columns if sensor in col]
+    data_activity = [df for df in data if df[activity].all() == 1]  # Only show data for selected activity
+    desc_dfs = []
+    for i, df in enumerate(data_activity):
+        desc_df = df[columns].describe().T
+        desc_df.columns = pd.MultiIndex.from_product([[f'd{i + 1}'], desc_df.columns])
+        desc_dfs.append(desc_df)
+
+    result = pd.concat(desc_dfs, axis=1)
+    result.columns = result.columns.swaplevel(0, 1)
+    result.sort_index(axis=1, level=[0, 1], inplace=True)
+    return result
+
+
+
 
 if __name__ == '__main__':
     data, data_resampled = process_data()
     sensors = ['Accelerometer', 'Lin_Acc', 'Gyroscope', 'Location', 'Proximity']
-    for sensor in sensors:  # Testing with fist data point
-        plot_sensor(data[0], sensor)
+    activities = ['walk', 'run', 'bike', 'car', 'train']
+    for sensor in sensors:
+        plot_sensor(data[0], sensor)  # Only plotting for the first dataset
+        result = statistics_over_set(data, sensor, activities[0])  # Only printing statistics for 'walk' datasets
+        print(result['mean'])
+
