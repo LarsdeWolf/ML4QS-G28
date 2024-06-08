@@ -52,12 +52,12 @@ def measurement_to_df(measurement: str, activity: str, count: int):
         s_name = os.path.basename(sensor).split('.')[-2]                                        # Get sensor name
         df_ = pd.read_csv(sensor)
         df_.rename(columns=lambda x: f"{s_name}_{x}" if x != 'Time (s)' else x, inplace=True)   # Rename columns
-        df_.rename(columns=lambda x: x.replace('Linear Accelerometer', 'Lin_Acc') if 'Linear Accelerometer' in x
+        df_.rename(columns=lambda x: x.replace('Linear Accelerometer', 'Lin-Acc') if 'Linear Accelerometer' in x
             else x, inplace=True)
         if df is None:
             df = df_; continue
         df = pd.merge_asof(df, df_, on='Time (s)', direction='nearest')
-    for coll in ['walk', 'run', 'car', 'train']:
+    for coll in ['walk', 'run', 'bike', 'car', 'train']:
         df[coll] = 1 if coll == activity else 0                                                 # One-hot encode activity
     df['id'] = count
     df['Time (ns)'] = (df['Time (s)'] * 1e9).astype('int64')                                    # Convert to ns
