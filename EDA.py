@@ -2,6 +2,8 @@ from load_data import *
 import matplotlib.pyplot as plt
 import pandas as pd
 
+sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
+activities = ['walk', 'run', 'bike', 'car', 'train']
 
 def plot_set(data: list, sensor: str, activity: str, plot: str = 'lineplot'):
     """
@@ -86,11 +88,13 @@ def statistics_over_set(data: list, sensor: str, activity: str):
 if __name__ == '__main__':
     files = str(os.listdir('./data'))
     data, data_resampled = process_data()
-    sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    activities = ['walk', 'run', 'bike', 'car', 'train']
 
-    # Plotting each sensor for specified dataset (1 sensor per plot)
-    for sensor in sensors:  # Plotting each sensor
+    # # Plotting each sensor for specified dataset (1 sensor per plot)
+    # for sensor in sensors:  # Plotting each sensor
+    #     plot_single(data[0], sensor, 'lineplot')  # Only plotting for the first dataset (change plot to get boxplots)
+
+    # location is way too different for each record, hard to plot
+    for sensor in ['Accelerometer', 'Lin-Acc', 'Gyroscope']:  # Plotting each sensor
         plot_single(data[0], sensor, 'lineplot')  # Only plotting for the first dataset (change plot to get boxplots)
 
     # Plotting each dataset that belong to the specified activity for the specified sensor

@@ -21,8 +21,9 @@ def process_data(path: str = './Data',          # Path to data
     """
     if granularities is None:
         granularities = ['500ms', '1s', '10s', '30s', '1min', '2min']
-    data = [measurement_to_df(path + '/' + record, record.split()[0], count) for count, record in enumerate(os.listdir(path))]
-
+    raw_data = [measurement_to_df(path + '/' + record, record.split()[0], count) for count, record in enumerate(os.listdir(path))]
+    data = [df for df in raw_data if df is not None]  # Filter out None values
+    
     data_resampled = {}
     for granularity in granularities:
         for measurement in data:
@@ -52,13 +53,17 @@ def measurement_to_df(measurement: str, activity: str, count: int):
     for sensor in glob(f'{measurement}/*.csv'):
         s_name = os.path.basename(sensor).split('.')[-2]                                        # Get sensor name
         df_ = pd.read_csv(sensor)
+        df_['Time (s)'] = pd.to_numeric(df_['Time (s)'], errors='coerce')  # Ensure 'Time (s)' is numeric
+        df_ = df_.dropna(subset=['Time (s)'])  # Drop rows where 'Time (s)' is NaN
         df_['Time (s)'] = df_['Time (s)'].astype(float)  # Ensure 'Time (s)' is float64
         df_.rename(columns=lambda x: f"{s_name}_{x}" if x != 'Time (s)' else x, inplace=True)   # Rename columns
         df_.rename(columns=lambda x: x.replace('Linear Accelerometer', 'Lin-Acc') if 'Linear Accelerometer' in x
             else x, inplace=True)
+        
         if df is None:
             df = df_
             continue
+        
         df = pd.merge_asof(df, df_, on='Time (s)', direction='nearest')
         
     if df is None:
