@@ -26,10 +26,11 @@ def process_data(path: str = './Data',          # Path to data
     data_resampled = {}
     for granularity in granularities:
         for measurement in data:
-            if granularity not in data_resampled:
-                data_resampled[granularity] = [measurement.resample(granularity).mean()]
-                continue
-            data_resampled[granularity].append(measurement.resample(granularity).mean())
+            if measurement is not None:
+                if granularity not in data_resampled:
+                    data_resampled[granularity] = [measurement.resample(granularity).mean()]
+                    continue
+                data_resampled[granularity].append(measurement.resample(granularity).mean())
 
     return data, data_resampled
 
@@ -51,12 +52,19 @@ def measurement_to_df(measurement: str, activity: str, count: int):
     for sensor in glob(f'{measurement}/*.csv'):
         s_name = os.path.basename(sensor).split('.')[-2]                                        # Get sensor name
         df_ = pd.read_csv(sensor)
+        df_['Time (s)'] = df_['Time (s)'].astype(float)  # Ensure 'Time (s)' is float64
         df_.rename(columns=lambda x: f"{s_name}_{x}" if x != 'Time (s)' else x, inplace=True)   # Rename columns
         df_.rename(columns=lambda x: x.replace('Linear Accelerometer', 'Lin-Acc') if 'Linear Accelerometer' in x
             else x, inplace=True)
         if df is None:
-            df = df_; continue
+            df = df_
+            continue
         df = pd.merge_asof(df, df_, on='Time (s)', direction='nearest')
+        
+    if df is None:
+        print(f"Warning: No sensor data found in {measurement}")
+        return None
+    
     for coll in ['walk', 'run', 'bike', 'car', 'train']:
         df[coll] = 1 if coll == activity else 0                                                 # One-hot encode activity
     df['id'] = count
@@ -68,4 +76,7 @@ def measurement_to_df(measurement: str, activity: str, count: int):
 
 if __name__ == '__main__':
     data, resampled = process_data()
+    print(f"Processed {len(data)} measurements.")
+    for granularity, resampled_data in resampled.items():
+        print(f"Granularity: {granularity}, Number of resampled DataFrames: {len(resampled_data)}")
 
