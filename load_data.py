@@ -51,7 +51,9 @@ def measurement_to_df(measurement: str, activity: str, count: int):
     """
     df = None
     for sensor in glob(f'{measurement}/*.csv'):
-        s_name = os.path.basename(sensor).split('.')[-2]                                        # Get sensor name
+        s_name = os.path.basename(sensor).split('.')[-2] # Get sensor name
+        if s_name == 'Proximity':
+            continue
         df_ = pd.read_csv(sensor)
         df_['Time (s)'] = pd.to_numeric(df_['Time (s)'], errors='coerce')  # Ensure 'Time (s)' is numeric
         df_ = df_.dropna(subset=['Time (s)'])  # Drop rows where 'Time (s)' is NaN
