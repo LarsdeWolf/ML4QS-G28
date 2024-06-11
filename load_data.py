@@ -20,7 +20,7 @@ def process_data(path: str = './Data',          # Path to data
 
     """
     if granularities is None:
-        granularities = ['500ms', '1s', '10s', '30s', '1min', '2min']
+        granularities = ['100ms', '500ms', '1s', '10s', '30s']
     raw_data = [measurement_to_df(path + '/' + record, record.split()[0], count) for count, record in enumerate(os.listdir(path))]
     data = [df for df in raw_data if df is not None]  # Filter out None values
     

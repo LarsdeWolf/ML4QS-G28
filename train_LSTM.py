@@ -159,7 +159,7 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=256, layers=3, la
         print(f"DEV ACCURACY: {acc_dev}")
         if acc_dev > bestdev:
             print("New Best DEV")
-            name = f"devacc-{round(acc_dev, 4)}_EPOCH-{epochs}_lr-{lr}_stepsize-{step_size}_hidden-{hidden_size}_layers-{layers}"
+            name = f"devacc-{round(acc_dev.item(), 4)}_EPOCH-{epochs}_lr-{lr}_stepsize-{step_size}_hidden-{hidden_size}_layers-{layers}"
             bestdev = acc_dev
             best_model = deepcopy(model.state_dict())
         print()
