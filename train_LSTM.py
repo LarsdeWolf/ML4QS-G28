@@ -102,7 +102,7 @@ def eval(m, dataloader):
     return correct / tot
 
 
-def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=256, layers=3, labels=5, dropout=0.5):
+def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
     """
     Trains a LSTM model the data.
     Uses a CrossEntropyLoss - Negative-Log-Likelihood between log softmax input probs and target labels
@@ -124,7 +124,7 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=256, layers=3, la
     X, y = np_from_df(list(data[i].dropna() for i in range(len(data))
                            if len(data[i].columns) == 23), step_size)
     X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_custom(X, y)
-    train_dataloader = DataLoader(MLDataset(X_train, y_train), batch_size=64, shuffle=True)
+    train_dataloader = DataLoader(MLDataset(X_train, y_train), batch_size=312, shuffle=True)
     test_dataloader = DataLoader(MLDataset(X_test, y_test), batch_size=64, shuffle=True)
     dev_dataloader = DataLoader(MLDataset(X_val, y_val), batch_size=64, shuffle=True)
     del X, y, X_train, y_train, X_test, y_test, X_val, y_val
