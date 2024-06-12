@@ -59,7 +59,7 @@ def np_from_df(data, step_size):
     for df in data:
         if len(df) < 1:
             continue
-        label = label_to_id[df[['walk', 'run', 'bike', 'car', 'train']].iloc[0].idxmax(axis=1)]
+        label = label_to_id[df[['walk', 'run', 'bike', 'car', 'train']].iloc[0].idxmax()]
         df = df.drop(['walk', 'run', 'bike', 'car', 'train', 'Time (ns)', 'id'], axis=1)
         for row in range(len(df) - step_size):
             features = df.iloc[row: row + step_size, df.columns != 'label'].values
