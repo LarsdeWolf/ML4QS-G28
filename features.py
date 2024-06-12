@@ -44,7 +44,7 @@ def extract_features(data: list, sensors: list, window: int=10):
             features.append(window_data[col].max())
             features.append(window_data[col].mean())
             features.append(window_data[col].std())
-            # Calculate slope (trend) using linear regression
+            # Calculate slope using linear regression
             y = window_data[col].values
             x = np.arange(len(y))
             slope, _, _, _, _ = linregress(x, y)
