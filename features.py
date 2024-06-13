@@ -38,7 +38,13 @@ def extract_features(data: list, sensors: list, window: int=10, multi_processing
         std_values = np.std(window_data, axis=1)[0]
         x = np.arange(window_data.shape[1])
         slopes = np.array([np.polyfit(x, window_data[:, :, i][0], 1)[0] for i in range(window_data.shape[2])])
-        features = np.concatenate([min_values, max_values, mean_values, std_values, slopes])
+
+        # Compute Fourier Transform for each sensor data in the window (Book 2.2.2)
+        fourier_transform = np.abs(np.fft.fft(window_data[0, :, :], axis=0))
+        fourier_max = fourier_transform.max(axis=1)
+        fourier_mean = fourier_transform.mean(axis=1)
+
+        features = np.concatenate([min_values, max_values, mean_values, std_values, slopes, fourier_max, fourier_mean])
         return features
 
     if multi_processing:
