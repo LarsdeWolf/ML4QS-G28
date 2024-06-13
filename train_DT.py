@@ -34,7 +34,7 @@ def train(data, epochs=10):
     Returns:
         Best model evaluated on the DEV set
     """
-    X, y = extract_features(data, sensors)
+    X, y = extract_features(data, sensors, multi_processing=True)
     imputer = SimpleImputer(strategy='mean')    # TODO: need to be replaced, just use a simple one to test
     X = imputer.fit_transform(X)
 
