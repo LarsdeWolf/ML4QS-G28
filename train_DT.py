@@ -35,8 +35,8 @@ def train(data, epochs=10):
         Best model evaluated on the DEV set
     """
     X, y = extract_features(data, sensors, multi_processing=True)
-    imputer = SimpleImputer(strategy='mean')    # TODO: need to be replaced, just use a simple one to test
-    X = imputer.fit_transform(X)
+    # imputer = SimpleImputer(strategy='mean')    # TODO: need to be replaced, just use a simple one to test
+    # X = imputer.fit_transform(X)
 
     X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_custom(X, y)
 

@@ -2,9 +2,9 @@ import numpy as np
 import pandas as pd
 from load_data import *
 from pathos.multiprocessing import ProcessingPool as Pool
+from sklearn.impute import SimpleImputer
 
 label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
-
 
 def extract_features(data: list, sensors: list, window: int = 10, overlap: float = 0.5, multi_processing: bool = False):
     """
@@ -39,7 +39,6 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
         std_values = np.std(window_data, axis=1)[0]
         x = np.arange(window_data.shape[1])
         slopes = np.array([np.polyfit(x, window_data[:, :, i][0], 1)[0] for i in range(window_data.shape[2])])
-
         # Compute Fourier Transform for each sensor data in the window (Book 2.2.2)
         fourier_transform = np.abs(np.fft.fft(window_data[0, :, :], axis=0))
         fourier_max = fourier_transform.max(axis=0)
@@ -62,6 +61,13 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
         df = df.drop(columns=[col for col in df.columns if any(sensor in col for sensor in drop_colls)])
 
         df_np = df.to_numpy()
+
+        # Check for NaN values to avoid error in slope
+        if np.isnan(df_np).any():
+            # print("Data contains NaN values. Imputing missing values.")
+            imputer = SimpleImputer(strategy='mean')
+            df_np = imputer.fit_transform(df_np)
+
         stride = max(1, int(window * (1 - overlap)))
         windowed_data = np.lib.stride_tricks.sliding_window_view(df_np, (window, df_np.shape[1]))[::stride, :, :]
         if multi_processing:
@@ -75,14 +81,16 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
         p.close()
         p.join()
 
-    return np.array(X), np.array(y)
+    return np.array(X, dtype=object), np.array(y)
 
 
 if __name__ == '__main__':
     _, data_resampled = process_data()
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = data_resampled['100ms']
-    X, y = extract_features(data, sensors, multi_processing=True)
+    # X, y = extract_features(data, sensors, multi_processing=True)
+    M, n = extract_features([data[0]], sensors)
+    X, y = extract_features([data[2]], sensors)
     print("Features shape:", X.shape)
     print("Labels shape:", y.shape)
     print("Features extracted")
