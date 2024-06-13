@@ -7,7 +7,7 @@ from pathos.multiprocessing import ProcessingPool as Pool
 label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
 
 
-def extract_features(data: list, sensors: list, window: int=10, multi_processing=False):
+def extract_features(data: list, sensors: list, window: int=10, overlap: float=0.5, multi_processing=False):
     """
     Extracts features for the given sensors using a sliding window
     Args:
@@ -61,7 +61,8 @@ def extract_features(data: list, sensors: list, window: int=10, multi_processing
         df = df.drop(columns=[col for col in df.columns if any(sensor in col for sensor in drop_colls)])
 
         df_np = df.to_numpy()
-        windowed_data = np.lib.stride_tricks.sliding_window_view(df_np, (window, df_np.shape[1]))
+        stride = round(window * (1 - overlap))
+        windowed_data = np.lib.stride_tricks.sliding_window_view(df_np, (window, df_np.shape[1]))[::stride, :, :]
         if multi_processing:
             result = p.map(features, windowed_data)
         else:
