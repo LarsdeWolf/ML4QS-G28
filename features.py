@@ -3,17 +3,17 @@ import pandas as pd
 from load_data import *
 from pathos.multiprocessing import ProcessingPool as Pool
 
-
 label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
 
 
-def extract_features(data: list, sensors: list, window: int=10, overlap: float=0.5, multi_processing=False):
+def extract_features(data: list, sensors: list, window: int = 10, overlap: float = 0.5, multi_processing: bool = False):
     """
     Extracts features for the given sensors using a sliding window
     Args:
         data: list of pd.dataframes
         sensors: list of sensor strings to include for feature extraction
         window: window size for feature calculation
+        overlap: amount of overlap for windows
         multi_processing: use multiprocessing (install pathos)
 
     Returns:
@@ -21,6 +21,7 @@ def extract_features(data: list, sensors: list, window: int=10, overlap: float=0
         y: numpy label array    (N,)
 
     """
+
     def features(window_data):
         """
         TODO: implement features
@@ -57,11 +58,11 @@ def extract_features(data: list, sensors: list, window: int=10, overlap: float=0
     drop_colls.update({'id', 'Time (ns)'})
 
     for df in data:
-        label = label_to_id[df[list(label_colls)].iloc[0].idxmax()] # Labels are assumed to be the same throughout df
+        label = label_to_id[df[list(label_colls)].iloc[0].idxmax()]  # Labels are assumed to be the same throughout df
         df = df.drop(columns=[col for col in df.columns if any(sensor in col for sensor in drop_colls)])
 
         df_np = df.to_numpy()
-        stride = round(window * (1 - overlap))
+        stride = max(1, int(window * (1 - overlap)))
         windowed_data = np.lib.stride_tricks.sliding_window_view(df_np, (window, df_np.shape[1]))[::stride, :, :]
         if multi_processing:
             result = p.map(features, windowed_data)
