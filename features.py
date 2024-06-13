@@ -41,8 +41,8 @@ def extract_features(data: list, sensors: list, window: int=10, multi_processing
 
         # Compute Fourier Transform for each sensor data in the window (Book 2.2.2)
         fourier_transform = np.abs(np.fft.fft(window_data[0, :, :], axis=0))
-        fourier_max = fourier_transform.max(axis=1)
-        fourier_mean = fourier_transform.mean(axis=1)
+        fourier_max = fourier_transform.max(axis=0)
+        fourier_mean = fourier_transform.mean(axis=0)
 
         features = np.concatenate([min_values, max_values, mean_values, std_values, slopes, fourier_max, fourier_mean])
         return features
