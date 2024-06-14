@@ -59,6 +59,6 @@ if __name__ == '__main__':
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     _, data_resampled = load_data.process_data()
     data = data_resampled['100ms']
-    data = get_data(data, sensors, dataset_level, 'KNN', 10)
+    data = get_data(data, sensors, dataset_level, 'KNN', 10, True, True)
 
     model = train(data, epochs=10)

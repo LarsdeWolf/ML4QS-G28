@@ -63,7 +63,7 @@ def eval(m, dataloader):
 
 def train(data, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
     X_train, y_train, X_test, y_test, X_val, y_val = data
-    train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=64, shuffle=True)
+    train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=128, shuffle=True)
     test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
     dev_dataloader = DataLoader(MLDataset(X_val, y_val), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
     del X_train, y_train, X_test, y_test, X_val, y_val
@@ -105,7 +105,6 @@ def train(data, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout
             name = f"devacc-{round(acc_dev.item(), 4)}_EPOCH-{epochs}_lr-{lr}_hidden-{hidden_size}_layers-{layers}"
             bestdev = acc_dev
             best_model = deepcopy(model.state_dict())
-        print()
 
     print("#######################TESTING#######################")
     model.load_state_dict(best_model)
@@ -120,8 +119,8 @@ if __name__ == '__main__':
     _, data_resampled = load_data.process_data()
     data = data_resampled['100ms']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    data = get_data(data, sensors, dataset_level, 'LSTM', step_size)
-    model, name = train(data, epochs=2)
+    data = get_data(data, sensors, dataset_level, 'LSTM', step_size, True, True)
+    model, name = train(data, epochs=10)
     torch.save(model.state_dict(), f'models/{name}')
 
 

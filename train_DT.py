@@ -61,5 +61,5 @@ if __name__ == '__main__':
     _, data_resampled = load_data.process_data()
     data = data_resampled['100ms']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    data = get_data(data, sensors, dataset_level, 'DT', 10)
+    data = get_data(data, sensors, dataset_level, 'DT', 10, True, True)
     model = train(data, epochs=10)
