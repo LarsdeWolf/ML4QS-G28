@@ -2,11 +2,9 @@ import load_data
 import torch
 import torch.nn as nn
 import numpy as np
+from utils import np_from_df, train_test_split_measurementlevel
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
-
-
-label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
 
 
 class MLDataset(Dataset):
@@ -40,46 +38,6 @@ class LSTM(nn.Module):
         self.lstm.flatten_parameters()
         _, (hidden, _) = self.lstm(x)  # Pass through LSTM layer
         return self.linear(hidden[-1])   # Pass through linear layer
-
-
-def np_from_df(data, step_size):
-    """
-    Converts a list of dataframes feature and label arrays
-    Uses step_size to create sequences of data
-    Assumes all elements in the dataframe have the same label
-    Args:
-        data: list of dataframes
-        step_size: size of sequence
-
-    Returns:
-        X: numpy array of features of shape (n_samples, step_size, n_features)
-        y: numpy array of labels
-    """
-    X, y = [], []
-    for df in data:
-        if len(df) < 1:
-            continue
-        label = label_to_id[df[['walk', 'run', 'bike', 'car', 'train']].iloc[0].idxmax()]
-        df = df.drop(['walk', 'run', 'bike', 'car', 'train', 'Time (ns)', 'id'], axis=1)
-        for row in range(len(df) - step_size):
-            features = df.iloc[row: row + step_size, df.columns != 'label'].values
-            X.append(features)
-            y.append(label)
-    return np.array(X), np.array(y)
-
-
-def train_test_split_custom(X, y, train_size=0.75, test_size=0.15, dev_size=0.10):
-    """
-    Shuffles and splits the datapoints into training, testing and validation sets
-    """
-    perm = np.random.permutation(len(X))
-    train_split, test_split, dev_split = int(len(X) * train_size), int(len(X) * test_size), int(len(X) * dev_size)
-
-    X_train, y_train = X[perm[:train_split]], y[perm[:train_split]]
-    X_test, y_test = X[perm[train_split:train_split + test_split]], y[perm[train_split:train_split + test_split]]
-    X_dev, y_dev = X[perm[train_split + test_split:len(X)]], y[perm[train_split + test_split:len(X)]]
-
-    return X_train, y_train, X_test, y_test, X_dev, y_dev
 
 
 def accuracy(pred: torch.tensor, gt: torch.tensor):
@@ -123,7 +81,7 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, la
     """
     X, y = np_from_df(list(data[i].dropna() for i in range(len(data))
                            if len(data[i].columns) == 23), step_size)
-    X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_custom(X, y)
+    X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_measurementlevel(X, y)
     train_dataloader = DataLoader(MLDataset(X_train, y_train), batch_size=312, shuffle=True)
     test_dataloader = DataLoader(MLDataset(X_test, y_test), batch_size=64, shuffle=True)
     dev_dataloader = DataLoader(MLDataset(X_val, y_val), batch_size=64, shuffle=True)

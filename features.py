@@ -6,7 +6,9 @@ from sklearn.impute import SimpleImputer
 
 label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
 
-def extract_features(data: list, sensors: list, window: int = 10, overlap: float = 0.5, multi_processing: bool = False):
+
+def extract_features(data: list, sensors: list, window: int = 10, overlap: float = 0.5, multi_processing: bool = False,
+                     restart: bool = False):
     """
     Extracts features for the given sensors using a sliding window
     Args:
@@ -15,6 +17,7 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
         window: window size for feature calculation
         overlap: amount of overlap for windows
         multi_processing: use multiprocessing (install pathos)
+        restart: restart pool (if extracting multiple times using multiprocessing)
 
     Returns:
         X: numpy feature array  (N, n_features)
@@ -78,8 +81,11 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
         y.extend([label] * len(windowed_data))
 
     if multi_processing:
-        p.close()
-        p.join()
+        if restart:
+            p.restart()
+        else:
+            p.close()
+            p.join()
 
     return np.array(X, dtype=object), np.array(y)
 

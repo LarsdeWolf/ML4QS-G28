@@ -3,24 +3,12 @@ import torch
 import numpy as np
 import pandas as pd
 from features import *
+from utils import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
 
-label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
+
 sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-
-def train_test_split_custom(X, y, train_size=0.75, test_size=0.15, dev_size=0.10):
-    """
-    Shuffles and splits the datapoints into training, testing and validation sets
-    """
-    perm = np.random.permutation(len(X))
-    train_split, test_split, dev_split = int(len(X) * train_size), int(len(X) * test_size), int(len(X) * dev_size)
-
-    X_train, y_train = X[perm[:train_split]], y[perm[:train_split]]
-    X_test, y_test = X[perm[train_split:train_split + test_split]], y[perm[train_split:train_split + test_split]]
-    X_dev, y_dev = X[perm[train_split + test_split:len(X)]], y[perm[train_split + test_split:len(X)]]
-
-    return X_train, y_train, X_test, y_test, X_dev, y_dev
 
 
 def train(data, epochs=10):
@@ -28,14 +16,13 @@ def train(data, epochs=10):
     Trains a KNN model on the data
     Evaluates each epoch on DEV set and saves the best model
     Args:
-        data: Output of load_data.process_data() (normal data or resampled data)
+        data: list of X_train, y_train, X_test, y_test, X_val, y_val
         epochs: Number of epochs to train
 
     Returns:
         Best model evaluated on the DEV set
     """
-    X, y = extract_features(data, sensors, multi_processing=True)
-    X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_custom(X, y)
+    X_train, y_train, X_test, y_test, X_val, y_val = data
 
     best_model = None
     best_accuracy = 0
@@ -47,9 +34,9 @@ def train(data, epochs=10):
         # Train the model
         knn.fit(X_train, y_train)
 
-        y_val_pred = knn.predict(X_val)
-        val_accuracy = accuracy_score(y_val, y_val_pred)
-        print(f"Epoch {epoch + 1}/{epochs} - Validation Accuracy: {val_accuracy}")
+        y_train_pred = knn.predict(X_train)
+        train_acc = accuracy_score(y_train, y_train_pred)
+        print(f"Epoch {epoch + 1}/{epochs} - Train Accuracy: {train_acc}")
 
         # Evaluate the model on the DEV set
         print("#######################DEV#######################")
@@ -70,6 +57,18 @@ def train(data, epochs=10):
 
 
 if __name__ == '__main__':
+    dataset_level = 'measurement'  # Or activity
     _, data_resampled = load_data.process_data()
-    data_resampled = data_resampled['100ms']
-    bestdev = train(data_resampled)
+    data = data_resampled['100ms']
+    if dataset_level == 'measurement':
+        X, y = extract_features(data, sensors, multi_processing=True)
+        data = train_test_split_measurementlevel(X, y)
+    else:
+        data_train, data_test, data_dev = train_test_split_activitylevel(data)
+        data = [
+            *extract_features(data_train, sensors, multi_processing=True, restart=True),  # Train
+            *extract_features(data_test, sensors, multi_processing=True, restart=True),  # Test
+            *extract_features(data_dev, sensors, multi_processing=True, restart=False)  # Dev
+        ]
+
+    model = train(data, epochs=10)
