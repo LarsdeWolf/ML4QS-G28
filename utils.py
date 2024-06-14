@@ -78,6 +78,20 @@ def np_from_df(data, step_size, multip=False, close=False):
     return np.array(X), np.array(y)
 
 def get_data(data, sensors, dataset_level, model, window_stepsize, multi_p, close):
+    """
+    automatically collect data for given model, data, stepsize, etc
+    Args:
+        data: List of pd.Dataframes
+        sensors: List of sensors to use
+        dataset_level: measurement or activity based train/test/dev splitting
+        model: LSTM/KNN/DT
+        window_stepsize: KNN/DT: aggregation window size, LSTM: sequence/step size (#points in a datapoint)
+        multi_p: use multiprocessing
+        close: close multip. pool (last run)
+
+    Returns:
+        data: [X_train, y_train, X_test, y_test, X_dev, y_dev]
+    """
     if model == 'LSTM':
         if dataset_level == 'measurement':
             X, y = np_from_df(list(df.dropna() for df in data), window_stepsize, multi_p, close)

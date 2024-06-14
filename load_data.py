@@ -73,9 +73,9 @@ def measurement_to_df(measurement: str, activity: str, count: int):
         return None
     
     for coll in ['walk', 'run', 'bike', 'car', 'train']:
-        df[coll] = 1 if coll == activity else 0                                                 # One-hot encode activity
+        df[coll] = 1 if coll == activity else 0                 # One-hot encode activity
     df['id'] = count
-    df['Time (ns)'] = (df['Time (s)'] * 1e9).astype('int64')                                    # Convert to ns
+    df['Time (ns)'] = (df['Time (s)'] * 1e9).astype('int64')    # Convert to ns
     df['Time (s)'] = pd.to_datetime(df['Time (s)'], unit='s')
     df.set_index('Time (s)', inplace=True)
     return df

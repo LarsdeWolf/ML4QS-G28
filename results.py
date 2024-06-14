@@ -27,17 +27,17 @@ def experiments(models, data, granularities, windows, sensors, data_level, repea
 
 def experiment(model, data):
     if model == 'LSTM':
-        model, _ = trainLSTM(data, epochs=10)
+        model, _ = trainLSTM(data, output=False, epochs=10)  # Suppressing train printing output in order to show summarized output (TODO)
     if model == 'KNN':
-        model = trainKNN(data, epochs=10)
+        model = trainKNN(data, output=False, epochs=10)
     if model == 'DT':
-        model = trainDT(data, epochs=10)
+        model = trainDT(data, output=False, epochs=10)
 
 if __name__ == '__main__':
     _, data_resampled = process_data()
     granularities = ['100ms', '500ms', '1s']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    data_level = 'measdurement'
+    data_level = 'measurement'
     models = ['KNN', 'LSTM', 'DT']
     windows = [5, 10, 50]
 

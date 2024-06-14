@@ -1,3 +1,5 @@
+from __future__ import print_function
+import builtins
 import load_data
 import torch
 import torch.nn as nn
@@ -6,6 +8,12 @@ from utils import get_data
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
 from torch.cuda.amp import GradScaler, autocast
+
+
+debug = True
+def print(*args, **kwargs):
+     if(debug):
+             return builtins.print(*args, **kwargs)
 
 
 class MLDataset(Dataset):
@@ -61,7 +69,7 @@ def eval(m, dataloader):
     return correct / tot
 
 
-def train(data, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
+def train(data, output=True, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
     X_train, y_train, X_test, y_test, X_val, y_val = data
     train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=128, shuffle=True)
     test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
@@ -74,6 +82,9 @@ def train(data, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout
     scaler = GradScaler()
 
     bestdev, best_model, name, steps = 0, None, "", (len(train_dataloader) // 5)
+    global debug
+    debug = output
+
     for EPOCH in range(epochs):
         print("#######################TRAIN#######################")
         model.train()

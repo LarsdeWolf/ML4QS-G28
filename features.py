@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from load_data import *
 from pathos.multiprocessing import ProcessingPool as Pool
 from sklearn.impute import SimpleImputer

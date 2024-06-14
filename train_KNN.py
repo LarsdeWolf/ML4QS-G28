@@ -1,15 +1,18 @@
-import load_data
-import torch
-import numpy as np
-import pandas as pd
-from features import *
-from utils import *
+from __future__ import print_function
+import builtins
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
-from train_LSTM import *
+from load_data import process_data
+from utils import *
 
 
-def train(data, epochs=10):
+debug = True
+def print(*args, **kwargs):
+     if(debug):
+             return builtins.print(*args, **kwargs)
+
+
+def train(data, output=True, epochs=10):
     """
     Trains a KNN model on the data
     Evaluates each epoch on DEV set and saves the best model
@@ -24,6 +27,10 @@ def train(data, epochs=10):
 
     best_model = None
     best_accuracy = 0
+
+    global debug
+    debug = output
+
     for epoch in range(epochs):
         print("#######################TRAIN#######################")
         # Initialize the KNN model
@@ -57,7 +64,7 @@ def train(data, epochs=10):
 if __name__ == '__main__':
     dataset_level = 'measurement'  # Or activity
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    _, data_resampled = load_data.process_data()
+    _, data_resampled = process_data()
     data = data_resampled['100ms']
     data = get_data(data, sensors, dataset_level, 'KNN', 10, True, True)
 

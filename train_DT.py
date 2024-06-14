@@ -1,16 +1,21 @@
-import load_data
-import numpy as np
-from features import *
+from __future__ import print_function
+import builtins
+from load_data import process_data
 from utils import *
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 from sklearn.impute import SimpleImputer
 
+debug = True
+def print(*args, **kwargs):
+     if(debug):
+             return builtins.print(*args, **kwargs)
+
 
 sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
 
 
-def train(data, epochs=10):
+def train(data, output=True, epochs=10):
     """
     Trains a Decision Tree model on the data
     Evaluates each epoch on DEV set and saves the best model
@@ -28,6 +33,9 @@ def train(data, epochs=10):
 
     best_model = None
     best_accuracy = 0
+
+    global debug
+    debug = output
 
     for epoch in range(epochs):
         print("#######################TRAIN#######################")
@@ -58,8 +66,8 @@ def train(data, epochs=10):
 
 if __name__ == '__main__':
     dataset_level = 'measurement'  # Or activity
-    _, data_resampled = load_data.process_data()
+    _, data_resampled = process_data()
     data = data_resampled['100ms']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'DT', 10, True, True)
-    model = train(data, epochs=10)
+    model = train(data, output=False, epochs=1)
