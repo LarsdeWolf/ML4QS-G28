@@ -1,4 +1,5 @@
 import numpy as np
+from pathos.multiprocessing import ProcessingPool as Pool
 from features import *
 
 
@@ -38,9 +39,9 @@ def train_test_split_activitylevel(data):
 
     return data_train, data_test, data_dev
 
-def np_from_df(data, step_size):
+def np_from_df(data, step_size, multip=False, close=False):
     """
-    Converts a list of dataframes feature and label arrays
+    Converts a list of dataframes to feature and label arrays. (using the raw data)
     Uses step_size to create sequences of data
     Assumes all elements in the dataframe have the same label
     Args:
@@ -51,29 +52,42 @@ def np_from_df(data, step_size):
         X: numpy array of features of shape (n_samples, step_size, n_features)
         y: numpy array of labels
     """
+    def return_features(i):
+        features = df.iloc[i: i + step_size, df.columns != 'label'].values
+        return features
+
     X, y = [], []
+    if multip:
+        p = Pool()
+
     for df in data:
         if len(df) < 1:
             continue
         label = label_to_id[df[['walk', 'run', 'bike', 'car', 'train']].iloc[0].idxmax()]
         df = df.drop(['walk', 'run', 'bike', 'car', 'train', 'Time (ns)', 'id'], axis=1)
-        for row in range(len(df) - step_size):
-            features = df.iloc[row: row + step_size, df.columns != 'label'].values
-            X.append(features)
-            y.append(label)
+        if multip:
+            result = p.map(return_features, np.arange(len(df) - step_size))
+        else:
+            result = [return_features(i) for i in range(len(df) - step_size)]
+        X.extend(result)
+        y.extend([label] * (len(df) - step_size))
+    if multip and close:
+        print("Closed Pool!")
+        p.close()
+        p.join()
     return np.array(X), np.array(y)
 
 def get_data(data, sensors, dataset_level, model, window_stepsize, multi_p, close):
     if model == 'LSTM':
         if dataset_level == 'measurement':
-            X, y = np_from_df(list(df.dropna() for df in data), window_stepsize)
+            X, y = np_from_df(list(df.dropna() for df in data), window_stepsize, multi_p, close)
             data = train_test_split_measurementlevel(X, y)
         else:
             data_train, data_test, data_dev = train_test_split_activitylevel(data)
             data = [
-                *np_from_df(list(df.dropna() for df in data_train), window_stepsize),  # Train
-                *np_from_df(list(df.dropna() for df in data_test), window_stepsize),  # Test
-                *np_from_df(list(df.dropna() for df in data_dev), window_stepsize)  # Dev
+                *np_from_df(list(df.dropna() for df in data_train), window_stepsize, multi_p),  # Train
+                *np_from_df(list(df.dropna() for df in data_test), window_stepsize, multi_p),  # Test
+                *np_from_df(list(df.dropna() for df in data_dev), window_stepsize, multi_p, close)  # Dev
             ]
     else:
         if dataset_level == 'measurement':
@@ -84,6 +98,6 @@ def get_data(data, sensors, dataset_level, model, window_stepsize, multi_p, clos
             data = [
                 *extract_features(data_train, sensors, window=window_stepsize, multi_processing=multi_p),  # Train
                 *extract_features(data_test, sensors, window=window_stepsize, multi_processing=multi_p),  # Test
-                *extract_features(data_dev, sensors, window=window_stepsize, multi_processing=True, close=close)  # Dev
+                *extract_features(data_dev, sensors, window=window_stepsize, multi_processing=multi_p, close=close)  # Dev
             ]
     return data
