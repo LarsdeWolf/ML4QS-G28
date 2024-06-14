@@ -88,9 +88,7 @@ if __name__ == '__main__':
     _, data_resampled = process_data()
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = data_resampled['100ms']
-    # X, y = extract_features(data, sensors, multi_processing=True)
-    M, n = extract_features([data[0]], sensors)
-    X, y = extract_features([data[2]], sensors)
+    X, y = extract_features(data, sensors, multi_processing=True)
     print("Features shape:", X.shape)
     print("Labels shape:", y.shape)
     print("Features extracted")
