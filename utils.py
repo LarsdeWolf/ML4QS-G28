@@ -62,3 +62,28 @@ def np_from_df(data, step_size):
             X.append(features)
             y.append(label)
     return np.array(X), np.array(y)
+
+def get_data(data, sensors, dataset_level, model, window_stepsize):
+    if model == 'LSTM':
+        if dataset_level == 'measurement':
+            X, y = np_from_df(list(df.dropna() for df in data), window_stepsize)
+            data = train_test_split_measurementlevel(X, y)
+        else:
+            data_train, data_test, data_dev = train_test_split_activitylevel(data)
+            data = [
+                *np_from_df(list(df.dropna() for df in data_train), window_stepsize),  # Train
+                *np_from_df(list(df.dropna() for df in data_test), window_stepsize),  # Test
+                *np_from_df(list(df.dropna() for df in data_dev), window_stepsize)  # Dev
+            ]
+    else:
+        if dataset_level == 'measurement':
+            X, y = extract_features(data, sensors, multi_processing=True)
+            data = train_test_split_measurementlevel(X, y)
+        else:
+            data_train, data_test, data_dev = train_test_split_activitylevel(data)
+            data = [
+                *extract_features(data_train, sensors, window=window_stepsize, multi_processing=True, restart=True),  # Train
+                *extract_features(data_test, sensors, window=window_stepsize, multi_processing=True, restart=True),  # Test
+                *extract_features(data_dev, sensors, window=window_stepsize, multi_processing=True, restart=False)  # Dev
+            ]
+    return data

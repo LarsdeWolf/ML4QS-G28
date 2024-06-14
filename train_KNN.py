@@ -6,9 +6,7 @@ from features import *
 from utils import *
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
-
-
-sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
+from train_LSTM import *
 
 
 def train(data, epochs=10):
@@ -58,17 +56,9 @@ def train(data, epochs=10):
 
 if __name__ == '__main__':
     dataset_level = 'measurement'  # Or activity
+    sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     _, data_resampled = load_data.process_data()
     data = data_resampled['100ms']
-    if dataset_level == 'measurement':
-        X, y = extract_features(data, sensors, multi_processing=True)
-        data = train_test_split_measurementlevel(X, y)
-    else:
-        data_train, data_test, data_dev = train_test_split_activitylevel(data)
-        data = [
-            *extract_features(data_train, sensors, multi_processing=True, restart=True),  # Train
-            *extract_features(data_test, sensors, multi_processing=True, restart=True),  # Test
-            *extract_features(data_dev, sensors, multi_processing=True, restart=False)  # Dev
-        ]
+    data = get_data(data, sensors, dataset_level, 'KNN', 10)
 
     model = train(data, epochs=10)

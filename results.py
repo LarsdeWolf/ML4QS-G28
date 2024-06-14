@@ -1,25 +1,35 @@
-from load_data import *
-from features import *
-from train_DT import *
-from train_KNN import *
-from train_LSTM import *
+from train_DT import train as trainDT
+from train_KNN import train as trainKNN
+from train_LSTM import train as trainLSTM
 from utils import *
 
 
+def experiments(models, data, granularities, windows, sensors, data_level, repeats=3):
+    for model in models:
+        for gran in granularities:
+            data_gran = data[gran]
+            for window in windows:
+                dataset = get_data(data_gran, sensors, data_level, model, window)
+                for repeat in range(repeats):
+                    print(f"Training {model} model on dataset with {gran} granularity and {window} window size ")
+                    print(f'Repeat {repeat}')
+                    experiment(model, dataset)
 
-def experiments(models, data, sensors, data_level):
-    if data_level == 'measurement':
-        X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_measurementlevel(
-            extract_features(data, sensors, multi_processing=True))
+
+def experiment(model, data):
+    if model == 'LSTM':
+        trainLSTM(data, epochs=10)
+    if model == 'KNN':
+        trainKNN(data, epochs=10)
     else:
-        data_train, data_test, data_dev = train_test_split_activitylevel(data)
-        X_train, y_train = extract_features(data_train, sensors, multi_processing=True, restart=True)
-        X_test, y_test = extract_features(data_test, sensors, multi_processing=True, restart=True)
-        X_dev, y_dev = extract_features(data_dev, sensors, multi_processing=True, restart=False)
+        trainDT(data, epochs=10)
 
+if __name__ == '__main__':
+    _, data_resampled = process_data()
+    granularities = ['100ms', '500ms', '1s']
+    sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
+    data_level = 'measurement'
+    models = ['LSTM', 'KNN', 'DT']
+    windows = [5, 10, 50, 100]
 
-
-_, data_resampled = process_data()
-granularities = ['100ms', '500ms', '1s']
-sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-data_level = 'measurement'
+    experiments(models, data_resampled, granularities, windows, sensors, data_level)

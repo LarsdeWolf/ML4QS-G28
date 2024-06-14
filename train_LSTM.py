@@ -2,9 +2,10 @@ import load_data
 import torch
 import torch.nn as nn
 import numpy as np
-from utils import np_from_df, train_test_split_measurementlevel
+from utils import get_data
 from copy import deepcopy
 from torch.utils.data import DataLoader, Dataset
+from torch.cuda.amp import GradScaler, autocast
 
 
 class MLDataset(Dataset):
@@ -60,36 +61,17 @@ def eval(m, dataloader):
     return correct / tot
 
 
-def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
-    """
-    Trains a LSTM model the data.
-    Uses a CrossEntropyLoss - Negative-Log-Likelihood between log softmax input probs and target labels
-    Evaluates each epoch on DEV set and saves the best model
-    Args:
-        data: Output of load_data.process_data() (normal data or resampled data)
-        step_size: Amount of data points in a sequence
-        epochs: Number of epochs to train
-        lr: Learning rate
-        hidden_size: Amount of hidden units per layer
-        layers: Amount of hidden (LSTM) layers
-        labels: Amount of classed to predict
-        dropout: Dropout percentage
-
-    Returns:
-        Best model evaluated on the DEV set
-
-    """
-    X, y = np_from_df(list(data[i].dropna() for i in range(len(data))
-                           if len(data[i].columns) == 23), step_size)
-    X_train, y_train, X_test, y_test, X_val, y_val = train_test_split_measurementlevel(X, y)
-    train_dataloader = DataLoader(MLDataset(X_train, y_train), batch_size=312, shuffle=True)
-    test_dataloader = DataLoader(MLDataset(X_test, y_test), batch_size=64, shuffle=True)
-    dev_dataloader = DataLoader(MLDataset(X_val, y_val), batch_size=64, shuffle=True)
-    del X, y, X_train, y_train, X_test, y_test, X_val, y_val
+def train(data, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
+    X_train, y_train, X_test, y_test, X_val, y_val = data
+    train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=64, shuffle=True)
+    test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
+    dev_dataloader = DataLoader(MLDataset(X_val, y_val), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
+    del X_train, y_train, X_test, y_test, X_val, y_val
 
     model = LSTM(16, hidden_size, layers, labels, dropout)
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr, momentum=0.9)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
+    scaler = GradScaler()
 
     bestdev, best_model, name, steps = 0, None, "", (len(train_dataloader) // 5)
     for EPOCH in range(epochs):
@@ -97,12 +79,15 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, la
         model.train()
         loss_avg, accuracy_avg = 0, 0
         for i, (x, y) in enumerate(train_dataloader):
+            x, y = x.to(model.device), y.to(model.device)
+            labels = y.squeeze().to(torch.int64)
             optimizer.zero_grad()
-            out = model(x.to(model.device))
-            labels = y.squeeze().to(torch.int64).to(model.device)
-            loss = loss_fn(out, labels)
-            loss.backward()
-            optimizer.step()
+            with autocast():
+                out = model(x)
+                loss = loss_fn(out, labels)
+            scaler.scale(loss).backward()
+            scaler.step(optimizer)
+            scaler.update()
 
             accuracy_avg += accuracy(out, labels)
             loss_avg += loss.item()
@@ -117,7 +102,7 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, la
         print(f"DEV ACCURACY: {acc_dev}")
         if acc_dev > bestdev:
             print("New Best DEV")
-            name = f"devacc-{round(acc_dev.item(), 4)}_EPOCH-{epochs}_lr-{lr}_stepsize-{step_size}_hidden-{hidden_size}_layers-{layers}"
+            name = f"devacc-{round(acc_dev.item(), 4)}_EPOCH-{epochs}_lr-{lr}_hidden-{hidden_size}_layers-{layers}"
             bestdev = acc_dev
             best_model = deepcopy(model.state_dict())
         print()
@@ -130,11 +115,14 @@ def train(data, step_size=100, epochs=20, lr=1e-3, hidden_size=200, layers=3, la
 
 
 if __name__ == '__main__':
+    dataset_level = 'measurement'  # Or activity
+    step_size = 10
     _, data_resampled = load_data.process_data()
-    data_resampled = data_resampled['100ms']
-    model, name = train(data_resampled)
+    data = data_resampled['100ms']
+    sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
+    data = get_data(data, sensors, dataset_level, 'LSTM', step_size)
+    model, name = train(data, epochs=2)
     torch.save(model.state_dict(), f'models/{name}')
-
 
 
 
