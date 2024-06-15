@@ -4,6 +4,7 @@ import load_data
 import torch
 import torch.nn as nn
 import numpy as np
+from cleaning import *
 from utils import get_data, DataLoader
 from copy import deepcopy
 from torch.utils.data import Dataset
@@ -147,6 +148,7 @@ if __name__ == '__main__':
     step_size = 10
     _, data_resampled = load_data.process_data()
     data = data_resampled['100ms']
+    data = clean_data(data)
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'LSTM', step_size, True, True)
     model, name = train(data, epochs=1)

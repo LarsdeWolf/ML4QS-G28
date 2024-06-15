@@ -53,54 +53,35 @@ def plot_data(original, cleaned, title):
         time_col = range(len(original))
 
     numeric_cols = cleaned.select_dtypes(include=[np.number]).columns
-    cols_to_plot = [col for col in numeric_cols if col != 'timestamp']
-    num_plots = len(cols_to_plot)
-
-    for i, col in enumerate(cols_to_plot):
-        plt.subplot(1, num_plots, i + 1)
+    for i, col in enumerate(numeric_cols):
+        plt.subplot(1, len(numeric_cols), i + 1)
         plt.plot(time_col, original[col], label='Original', alpha=0.5)
-        plt.plot(time_col, cleaned[col], label='Cleaned', alpha=0.5)
+        plt.plot(time_col, cleaned[col], label='Cleaned', alpha=0.75)
         plt.title(col)
         plt.legend()
     plt.suptitle(title)
     plt.tight_layout()
     plt.show()
 
-# Base directory path
-base_path = '/Users/vaji/Documents/ProjectMealDeliveryJ1/ML4QS-G28/Data/car pocket (Lars)/'
+# Directory path for the dataset
+base_path = '/Data/walk pocket (Lars) Measurement 05062024 1224 2024-06-06 11-18-28'
 
-# File names
-file_names = [
-    'Accelerometer.csv',
-    'Gyroscope.csv',
-    'Linear Accelerometer.csv',
-    'Location.csv',
-    'Proximity.csv'
-]
+# Names of the files
+file_names = ['Accelerometer.csv', 'Gyroscope.csv', 'Linear Accelerometer.csv', 'Location.csv', 'Proximity.csv']
 
-# Track processed files
-processed_files = []
-missing_files = []
-
-# Check and process each file if it exists
+# Process each file
 for file_name in file_names:
     file_path = os.path.join(base_path, file_name)
     if os.path.exists(file_path):
-        print(f"Attempting to load: {file_path}")
+        print(f"Loading data from {file_path}")
         data = load_data(file_path)
         if data is not None:
             original_data = data.copy()
             cleaned_data = clean_data(data)
             plot_data(original_data, cleaned_data, file_name)
-            cleaned_data.to_csv(os.path.join(base_path, f'cleaned_{file_name}'), index=False)
-            print(f'Cleaned data for {file_name} saved.')
-            processed_files.append(file_name)
-        else:
-            print(f"Failed to load data for {file_name}.")
+            # cleaned_data.to_csv(os.path.join(base_path, f'cleaned_{file_name}'), index=False)
+            # print(f'Cleaned data for {file_name} saved.')
     else:
         print(f"File not found: {file_name}")
-        missing_files.append(file_name)
 
-print('Processed all available files.')
-print(f'Files processed: {processed_files}')
-print(f'Missing files: {missing_files}')
+print('Processing complete.')

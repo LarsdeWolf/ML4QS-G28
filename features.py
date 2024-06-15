@@ -1,5 +1,6 @@
 import numpy as np
 from load_data import *
+from cleaning import *
 from pathos.multiprocessing import ProcessingPool as Pool
 from sklearn.impute import SimpleImputer
 
@@ -66,7 +67,7 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
 
         # Check for NaN values to avoid error in slope
         if np.isnan(df_np).any():
-            # print("Data contains NaN values. Imputing missing values.")
+            print("Data contains NaN values. Imputing missing values.")
             imputer = SimpleImputer(strategy='mean')
             df_np = imputer.fit_transform(df_np)
 
@@ -91,7 +92,8 @@ if __name__ == '__main__':
     _, data_resampled = process_data()
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = data_resampled['100ms']
-    X, y = extract_features(data, sensors, multi_processing=True, close=True)
+    cleaned_data = clean_data(data)
+    X, y = extract_features(cleaned_data, sensors, multi_processing=True, close=True)
     print("Features shape:", X.shape)
     print("Labels shape:", y.shape)
     print("Features extracted")

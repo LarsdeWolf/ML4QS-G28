@@ -47,7 +47,7 @@ def plot_data(original, cleaned, title):
     plt.show()
 
 # Directory path
-base_path = '/Users/vaji/Documents/ProjectMealDeliveryJ1/ML4QS-G28/Data/bike Pocket(Vaji)1/'
+base_path = '/Users/tangzj/Desktop/ML4QS/ML4QS-G28/Data/bike Pocket(Vaji)2'
 
 # Filenames
 file_names = [

@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_sc
 from sklearn.impute import SimpleImputer
 from load_data import process_data
 from utils import *
-
+from cleaning import *
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -91,6 +91,6 @@ if __name__ == '__main__':
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     _, data_resampled = process_data()
     data = data_resampled['100ms']
+    data = clean_data(data)
     data = get_data(data, sensors, dataset_level, 'KNN', 10, True, True)
-
     model = train(data, epochs=10)

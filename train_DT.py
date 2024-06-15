@@ -1,6 +1,7 @@
 from __future__ import print_function
 import builtins
 from load_data import process_data
+from cleaning import *
 from utils import *
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
@@ -77,6 +78,7 @@ if __name__ == '__main__':
     dataset_level = 'measurement'  # Or activity
     _, data_resampled = process_data()
     data = data_resampled['100ms']
+    data = clean_data(data)
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'DT', 10, True, True)
     model = train(data, output=True, epochs=1)
