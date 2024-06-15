@@ -6,6 +6,7 @@ import os
 import numpy as np
 import pickle
 import torch
+import sys
 
 def save_metrics(metrics, path):
     with open(path, 'wb') as f:
@@ -88,11 +89,12 @@ def experiment(model_name, data):
 
 if __name__ == '__main__':
     _, data_resampled = process_data()
-    # granularities = ['100ms', '500ms', '1s']
-    granularities = ['1s']
+    granularities = ['100ms', '500ms', '1s']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data_level = 'measurement'
-    models = ['KNN', 'LSTM', 'DT']
-    # windows = [5, 10, 50]
-    windows = [10, 50]
-    experiments(models, data_resampled, granularities, windows, sensors, data_level)
+    # models = ['KNN', 'LSTM', 'DT']
+    models = ['KNN', 'DT']
+    windows = [5, 10, 50]
+    with open('output.txt', 'w') as f:
+        sys.stdout = f
+        experiments(models, data_resampled, granularities, windows, sensors, data_level)
