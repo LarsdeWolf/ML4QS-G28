@@ -2,8 +2,6 @@ import pickle
 import os
 import torch
 import torch.nn as nn
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neighbors import KNeighborsClassifier
 class LSTM(nn.Module):
     """
     LSTM model with linear layer for classification
@@ -27,6 +25,10 @@ def load_metrics(path):
 
 def load_model(path, model_type=None):
     if model_type == 'LSTM':
+        hidden_size = 200
+        layers = 3
+        labels = 5
+        dropout = 0.5
         model = LSTM(16, hidden_size, layers, labels, dropout)
         model.load_state_dict(torch.load(path))
     else:
@@ -44,7 +46,7 @@ def view_metrics(metrics):
 def view_model(model):
     print("================== MODEL ==================")
     if isinstance(model, torch.nn.Module):
-        pass # TODO: to fill
+        print(model)
     else:
         if hasattr(model, 'get_params'):
             print("Model Parameters:")
@@ -58,7 +60,8 @@ def view_results(results_dir):
             print("================== LOAD ==================")
             print(f"Processing directory: {dir_path}")
             metrics_path = os.path.join(dir_path, 'metrics.pkl')
-            model_path = os.path.join(dir_path, 'model.pth') if 'LSTM' in dir else os.path.join(dir_path, 'model.pkl')
+            # model_path = os.path.join(dir_path, 'model.pth') if 'LSTM' in dir else os.path.join(dir_path, 'model.pkl')
+            model_path = os.path.join(dir_path, 'model.pkl')
 
             if os.path.exists(model_path):
                 if 'LSTM' in dir:
@@ -83,3 +86,4 @@ if __name__ == '__main__':
     best_dir = 'best'
     view_results(results_dir)
     view_results(best_dir)
+    # m = load_model(os.path.join('best/1s_10_DT_repeat2', 'model.pkl'))
