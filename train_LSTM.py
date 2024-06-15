@@ -4,9 +4,9 @@ import load_data
 import torch
 import torch.nn as nn
 import numpy as np
-from utils import get_data
+from utils import get_data, DataLoader
 from copy import deepcopy
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from torch.cuda.amp import GradScaler, autocast
 
 
@@ -68,12 +68,17 @@ def eval(m, dataloader):
             tot += len(y)
     return correct / tot
 
+# Cache Dataloaders (for running multiple experiments)
+train_dataloader, test_dataloader, dev_dataloader = None, None, None
+
 
 def train(data, output=True, epochs=20, lr=1e-3, hidden_size=200, layers=3, labels=5, dropout=0.5):
     X_train, y_train, X_test, y_test, X_val, y_val = data
-    train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=128, shuffle=True)
-    test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
-    dev_dataloader = DataLoader(MLDataset(X_val, y_val), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
+    global train_dataloader, test_dataloader, dev_dataloader
+    if [train_dataloader, test_dataloader, dev_dataloader] == [None, None, None]:
+        train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=256, shuffle=True)
+        test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
+        dev_dataloader = DataLoader(MLDataset(X_val, y_val), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
     del X_train, y_train, X_test, y_test, X_val, y_val
 
     model = LSTM(16, hidden_size, layers, labels, dropout)

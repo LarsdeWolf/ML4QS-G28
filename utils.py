@@ -1,10 +1,42 @@
 import numpy as np
+import torch
 from pathos.multiprocessing import ProcessingPool as Pool
 from features import *
 
 
 label_to_id = {'walk': 0, 'run': 1, 'bike': 2, 'car': 3, 'train': 4}
 
+
+class DataLoader(torch.utils.data.DataLoader):
+    # Faster Dataloader
+    # https://discuss.pytorch.org/t/enumerate-dataloader-slow/87778
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._DataLoader__initialized = False
+        self.batch_sampler = _RepeatSampler(self.batch_sampler)
+        self._DataLoader__initialized = True
+        self.iterator = super().__iter__()
+
+    def __len__(self):
+        return len(self.batch_sampler.sampler)
+
+    def __iter__(self):
+        for i in range(len(self)):
+            yield next(self.iterator)
+
+class _RepeatSampler(object):
+    """ Sampler that repeats forever.
+
+    Args:
+        sampler (Sampler)
+    """
+
+    def __init__(self, sampler):
+        self.sampler = sampler
+
+    def __iter__(self):
+        while True:
+            yield from iter(self.sampler)
 
 def train_test_split_measurementlevel(X, y, train_size=0.75, test_size=0.15, dev_size=0.10):
     """
