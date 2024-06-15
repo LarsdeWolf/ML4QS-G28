@@ -80,7 +80,7 @@ def experiment(model_name, data):
     results = None
     if model_name == 'LSTM':
         # model, results, _ = trainLSTM(data, output=False, epochs=10)  # Suppressing train printing output in order to show summarized output (TODO)
-        model, results, _ = trainLSTM(data, output=False, epochs=1)
+        model, results, _ = trainLSTM(data, output=False, epochs=10)
     if model_name == 'KNN':
         model, results = trainKNN(data, output=False, epochs=10)
     if model_name == 'DT':
@@ -91,10 +91,11 @@ if __name__ == '__main__':
     _, data_resampled = process_data()
     granularities = ['100ms', '500ms', '1s']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-    data_level = 'measurement'
+    data_level = 'activity'
+    # data_level = 'measurement'
     # models = ['KNN', 'LSTM', 'DT']
     models = ['KNN', 'DT']
     windows = [5, 10, 50]
-    with open('output.txt', 'w') as f:
+    with open('output_measurement_lstm.txt', 'w') as f:
         sys.stdout = f
         experiments(models, data_resampled, granularities, windows, sensors, data_level)

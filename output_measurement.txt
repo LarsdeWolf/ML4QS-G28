@@ -1,0 +1,180 @@
+Training KNN model on dataset with 100ms granularity and 5 window size 
+Repeat 0
+Training KNN model on dataset with 100ms granularity and 5 window size 
+Repeat 1
+Training KNN model on dataset with 100ms granularity and 5 window size 
+Repeat 2
+Summary for KNN model on dataset with 100ms granularity and 5 window size:
+Average accuracy: 0.982888146911519 | Average precision: 0.9861338687734326 | Average recall: 0.9809761425015537 | Average f1: 0.9834684057813039
+Training DT model on dataset with 100ms granularity and 5 window size 
+Repeat 0
+Training DT model on dataset with 100ms granularity and 5 window size 
+Repeat 1
+Training DT model on dataset with 100ms granularity and 5 window size 
+Repeat 2
+Summary for DT model on dataset with 100ms granularity and 5 window size:
+Average accuracy: 0.9955481357818586 | Average precision: 0.9966080675147181 | Average recall: 0.9961503128664594 | Average f1: 0.9963686287978094
+====================================
+The best model for 100ms granularity and 5 window size is DT
+Accuracy: 0.9958263772954925 | Pecision: 0.9968017121842407 | Recall: 0.9964371745991043 | F1: 0.9966096745965116
+====================================
+Training KNN model on dataset with 100ms granularity and 10 window size 
+Repeat 0
+Training KNN model on dataset with 100ms granularity and 10 window size 
+Repeat 1
+Training KNN model on dataset with 100ms granularity and 10 window size 
+Repeat 2
+Summary for KNN model on dataset with 100ms granularity and 10 window size:
+Average accuracy: 0.9824707846410684 | Average precision: 0.9811713162700363 | Average recall: 0.9785214601337052 | Average f1: 0.9797918906755511
+Training DT model on dataset with 100ms granularity and 10 window size 
+Repeat 0
+Training DT model on dataset with 100ms granularity and 10 window size 
+Repeat 1
+Training DT model on dataset with 100ms granularity and 10 window size 
+Repeat 2
+Summary for DT model on dataset with 100ms granularity and 10 window size:
+Average accuracy: 0.9944351697273234 | Average precision: 0.9956991886708266 | Average recall: 0.9955159803838575 | Average f1: 0.9955928432780032
+====================================
+The best model for 100ms granularity and 10 window size is DT
+Accuracy: 0.994991652754591 | Pecision: 0.9961370093158952 | Recall: 0.9959497203566777 | F1: 0.9960317271312622
+====================================
+Training KNN model on dataset with 100ms granularity and 50 window size 
+Repeat 0
+Training KNN model on dataset with 100ms granularity and 50 window size 
+Repeat 1
+Training KNN model on dataset with 100ms granularity and 50 window size 
+Repeat 2
+Summary for KNN model on dataset with 100ms granularity and 50 window size:
+Average accuracy: 0.9853923205342237 | Average precision: 0.9884662817569009 | Average recall: 0.9839448532062715 | Average f1: 0.9861424224408545
+Training DT model on dataset with 100ms granularity and 50 window size 
+Repeat 0
+Training DT model on dataset with 100ms granularity and 50 window size 
+Repeat 1
+Training DT model on dataset with 100ms granularity and 50 window size 
+Repeat 2
+Summary for DT model on dataset with 100ms granularity and 50 window size:
+Average accuracy: 0.9937395659432386 | Average precision: 0.9950349611044859 | Average recall: 0.9947656082043084 | Average f1: 0.9948905058767857
+====================================
+The best model for 100ms granularity and 50 window size is DT
+Accuracy: 0.9941569282136895 | Pecision: 0.995420061335899 | Recall: 0.9951015688896512 | F1: 0.995253080129157
+====================================
+Training KNN model on dataset with 500ms granularity and 5 window size 
+Repeat 0
+Training KNN model on dataset with 500ms granularity and 5 window size 
+Repeat 1
+Training KNN model on dataset with 500ms granularity and 5 window size 
+Repeat 2
+Summary for KNN model on dataset with 500ms granularity and 5 window size:
+Average accuracy: 0.9246861924686193 | Average precision: 0.9337084737318572 | Average recall: 0.9209371555683689 | Average f1: 0.9268104590014143
+Training DT model on dataset with 500ms granularity and 5 window size 
+Repeat 0
+Training DT model on dataset with 500ms granularity and 5 window size 
+Repeat 1
+Training DT model on dataset with 500ms granularity and 5 window size 
+Repeat 2
+Summary for DT model on dataset with 500ms granularity and 5 window size:
+Average accuracy: 0.99442119944212 | Average precision: 0.994885682206212 | Average recall: 0.9950063078216989 | Average f1: 0.99491755001549
+====================================
+The best model for 500ms granularity and 5 window size is DT
+Accuracy: 0.99581589958159 | Pecision: 0.9959177215189874 | Recall: 0.9969512195121951 | F1: 0.9964163254680257
+====================================
+Training KNN model on dataset with 500ms granularity and 10 window size 
+Repeat 0
+Training KNN model on dataset with 500ms granularity and 10 window size 
+Repeat 1
+Training KNN model on dataset with 500ms granularity and 10 window size 
+Repeat 2
+Summary for KNN model on dataset with 500ms granularity and 10 window size:
+Average accuracy: 0.9372384937238495 | Average precision: 0.9379033004482865 | Average recall: 0.9339284229709636 | Average f1: 0.935864174236919
+Training DT model on dataset with 500ms granularity and 10 window size 
+Repeat 0
+Training DT model on dataset with 500ms granularity and 10 window size 
+Repeat 1
+Training DT model on dataset with 500ms granularity and 10 window size 
+Repeat 2
+Summary for DT model on dataset with 500ms granularity and 10 window size:
+Average accuracy: 0.9874476987447699 | Average precision: 0.9884715149115945 | Average recall: 0.9892688402005172 | Average f1: 0.9888532522559705
+====================================
+The best model for 500ms granularity and 10 window size is DT
+Accuracy: 0.9874476987447699 | Pecision: 0.9893845373297429 | Recall: 0.9892195451201662 | F1: 0.9892967997237907
+====================================
+Training KNN model on dataset with 500ms granularity and 50 window size 
+Repeat 0
+Training KNN model on dataset with 500ms granularity and 50 window size 
+Repeat 1
+Training KNN model on dataset with 500ms granularity and 50 window size 
+Repeat 2
+Summary for KNN model on dataset with 500ms granularity and 50 window size:
+Average accuracy: 0.9414225941422595 | Average precision: 0.9395377267659878 | Average recall: 0.9335507056517011 | Average f1: 0.9359767906897717
+Training DT model on dataset with 500ms granularity and 50 window size 
+Repeat 0
+Training DT model on dataset with 500ms granularity and 50 window size 
+Repeat 1
+Training DT model on dataset with 500ms granularity and 50 window size 
+Repeat 2
+Summary for DT model on dataset with 500ms granularity and 50 window size:
+Average accuracy: 0.995118549511855 | Average precision: 0.9950531892268472 | Average recall: 0.9967111781832593 | Average f1: 0.9958596701022112
+====================================
+The best model for 500ms granularity and 50 window size is DT
+Accuracy: 0.997907949790795 | Pecision: 0.9979508196721312 | Recall: 0.998730964467005 | F1: 0.9983350611001163
+====================================
+Training KNN model on dataset with 1s granularity and 5 window size 
+Repeat 0
+Training KNN model on dataset with 1s granularity and 5 window size 
+Repeat 1
+Training KNN model on dataset with 1s granularity and 5 window size 
+Repeat 2
+Summary for KNN model on dataset with 1s granularity and 5 window size:
+Average accuracy: 0.9285714285714285 | Average precision: 0.9378181523834753 | Average recall: 0.9152568183813895 | Average f1: 0.9247855836511798
+Training DT model on dataset with 1s granularity and 5 window size 
+Repeat 0
+Training DT model on dataset with 1s granularity and 5 window size 
+Repeat 1
+Training DT model on dataset with 1s granularity and 5 window size 
+Repeat 2
+Summary for DT model on dataset with 1s granularity and 5 window size:
+Average accuracy: 0.9943977591036415 | Average precision: 0.993431675294925 | Average recall: 0.994657858249735 | Average f1: 0.9939935469976652
+====================================
+The best model for 1s granularity and 5 window size is DT
+Accuracy: 0.9957983193277311 | Pecision: 0.9963235294117647 | Recall: 0.9959016393442623 | F1: 0.9960820324456687
+====================================
+Training KNN model on dataset with 1s granularity and 10 window size 
+Repeat 0
+Training KNN model on dataset with 1s granularity and 10 window size 
+Repeat 1
+Training KNN model on dataset with 1s granularity and 10 window size 
+Repeat 2
+Summary for KNN model on dataset with 1s granularity and 10 window size:
+Average accuracy: 0.8991596638655462 | Average precision: 0.8893407225685707 | Average recall: 0.8865804160324707 | Average f1: 0.8873813683959121
+Training DT model on dataset with 1s granularity and 10 window size 
+Repeat 0
+Training DT model on dataset with 1s granularity and 10 window size 
+Repeat 1
+Training DT model on dataset with 1s granularity and 10 window size 
+Repeat 2
+Summary for DT model on dataset with 1s granularity and 10 window size:
+Average accuracy: 0.9845938375350141 | Average precision: 0.985842578327263 | Average recall: 0.986237950279046 | Average f1: 0.9859821242682015
+====================================
+The best model for 1s granularity and 10 window size is DT
+Accuracy: 0.9873949579831933 | Pecision: 0.9888493676603433 | Recall: 0.9885210553018772 | F1: 0.9886642142459786
+====================================
+Training KNN model on dataset with 1s granularity and 50 window size 
+Repeat 0
+Training KNN model on dataset with 1s granularity and 50 window size 
+Repeat 1
+Training KNN model on dataset with 1s granularity and 50 window size 
+Repeat 2
+Summary for KNN model on dataset with 1s granularity and 50 window size:
+Average accuracy: 0.8991596638655462 | Average precision: 0.885517955136228 | Average recall: 0.8885199957361379 | Average f1: 0.8862154628305675
+Training DT model on dataset with 1s granularity and 50 window size 
+Repeat 0
+Training DT model on dataset with 1s granularity and 50 window size 
+Repeat 1
+Training DT model on dataset with 1s granularity and 50 window size 
+Repeat 2
+Summary for DT model on dataset with 1s granularity and 50 window size:
+Average accuracy: 0.9971988795518207 | Average precision: 0.9980842911877396 | Average recall: 0.9967320261437909 | Average f1: 0.9973864438466968
+====================================
+The best model for 1s granularity and 50 window size is DT
+Accuracy: 1.0 | Pecision: 1.0 | Recall: 1.0 | F1: 1.0
+====================================
