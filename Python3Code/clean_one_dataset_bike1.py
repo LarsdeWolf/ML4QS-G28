@@ -65,7 +65,7 @@ for file_name in file_names:
     original_data = data.copy()
     cleaned_data = clean_data(data)
     plot_data(original_data, cleaned_data, file_name)
-    cleaned_data.to_csv(base_path + 'cleaned_' + file_name, index=False)
-    print(f'Cleaned data for {file_name} saved.')
+    # cleaned_data.to_csv(base_path + 'cleaned_' + file_name, index=False)
+    # print(f'Cleaned data for {file_name} saved.')
 
 print('All files have been cleaned and saved.')
