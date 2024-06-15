@@ -1,38 +1,42 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from sklearn.neighbors import LocalOutlierFactor
+from sklearn.impute import SimpleImputer
 
 # Function to load data
 def load_data(file_path):
     return pd.read_csv(file_path)
 
-# Function to clean data using distance-based outlier removal and interpolation
-def clean_data(df):
-    # Assuming the data is numerical and might or might not have a 'timestamp' column
+# Function to clean data using LOF outlier removal and interpolation
+def clean_data(df, contamination=0.1, n_neighbors=20):
     numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     if 'timestamp' in numeric_cols:
-        numeric_cols.remove('timestamp')  # Remove timestamp from numeric columns if present
+        numeric_cols.remove('timestamp')
 
-    # Apply a simple distance-based outlier detection
+    # Initial imputation of missing values with mean
+    imputer = SimpleImputer(strategy='mean')
+    df[numeric_cols] = imputer.fit_transform(df[numeric_cols])
+
+    # Dynamically set n_neighbors based on the size of the dataset
     for col in numeric_cols:
-        distance = np.abs(df[col] - df[col].mean())
-        threshold = distance.std() * 3
-        outliers = distance > threshold
-        df.loc[outliers, col] = np.nan  # Mark outliers as NaN
+        data_col = df[col].values.reshape(-1, 1)
+        actual_n_neighbors = min(n_neighbors, len(data_col) - 1)
 
-    # Interpolate missing values
-    df[numeric_cols] = df[numeric_cols].interpolate()
+        # Apply LOF for outlier detection
+        lof = LocalOutlierFactor(n_neighbors=actual_n_neighbors, contamination=contamination)
+        is_outlier = lof.fit_predict(data_col)
+        df.loc[is_outlier == -1, col] = np.nan  # Mark outliers as NaN
+
+    # Final interpolation of missing values
+    df[numeric_cols] = df[numeric_cols].interpolate(method='linear')
 
     return df
 
 # Plotting function
 def plot_data(original, cleaned, title):
-    plt.figure(figsize=(15, 5))
-    if 'timestamp' in original.columns:
-        time_col = original['timestamp']
-    else:
-        time_col = range(len(original))  # Use index if no timestamp available
-
+    plt.figure(figsize=(20, 5))
+    time_col = original['timestamp'] if 'timestamp' in original.columns else range(len(original))
     for i, col in enumerate(cleaned.columns):
         plt.subplot(1, len(cleaned.columns), i + 1)
         plt.plot(time_col, original[col], label='Original', alpha=0.5)
@@ -61,7 +65,6 @@ for file_name in file_names:
     original_data = data.copy()
     cleaned_data = clean_data(data)
     plot_data(original_data, cleaned_data, file_name)
-    # Save cleaned data back to CSV
     cleaned_data.to_csv(base_path + 'cleaned_' + file_name, index=False)
     print(f'Cleaned data for {file_name} saved.')
 
