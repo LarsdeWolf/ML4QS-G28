@@ -34,6 +34,7 @@ def train(data, output=True, epochs=10):
 
     best_model = None
     best_accuracy = 0
+    best_metrics = None
 
     global debug
     debug = output
@@ -59,7 +60,7 @@ def train(data, output=True, epochs=10):
         print(f"Epoch {epoch + 1}/{epochs} - Dev Accuracy: {dev_accuracy} | Dev Precision: {dev_precision} | Dev Recall: {dev_recall} | Dev F1: {dev_f1}")
 
         if dev_accuracy > best_accuracy:  # save best model based on dev accuracy
-            best_accuracy = dev_accuracy
+            best_metrics = [dev_accuracy, dev_precision, dev_recall, dev_f1]
             best_model = model
 
     # Evaluate best model on the test set
@@ -71,7 +72,7 @@ def train(data, output=True, epochs=10):
     test_recall = recall_score(y_test, y_test_pred, average='macro', zero_division=0.0)
     print(f"Test Accuracy: {test_accuracy} | Test Precision: {test_precision} | Test Recall: {test_recall} | Test F1: {test_f1}")
 
-    return best_model
+    return best_model, best_metrics
 
 
 if __name__ == '__main__':
@@ -81,4 +82,5 @@ if __name__ == '__main__':
     data = clean_data(data)
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'DT', 10, True, True)
-    model = train(data, output=True, epochs=1)
+    model, metrics = train(data, output=True, epochs=1)
+    # print(metrics)

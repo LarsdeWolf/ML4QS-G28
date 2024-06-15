@@ -67,7 +67,7 @@ def extract_features(data: list, sensors: list, window: int = 10, overlap: float
 
         # Check for NaN values to avoid error in slope
         if np.isnan(df_np).any():
-            print("Data contains NaN values. Imputing missing values.")
+            # print("Data contains NaN values. Imputing missing values.")
             imputer = SimpleImputer(strategy='mean')
             df_np = imputer.fit_transform(df_np)
 

@@ -40,6 +40,7 @@ def train(data, output=True, epochs=10):
 
     best_model = None
     best_accuracy = 0
+    best_metrics = None
 
     global debug
     debug = output
@@ -69,8 +70,8 @@ def train(data, output=True, epochs=10):
         print(f"Epoch {epoch + 1}/{epochs} - Dev Accuracy: {dev_accuracy} | Dev Precision: {dev_precision} | Dev Recall: {dev_recall} | Dev F1: {dev_f1}")
 
     if dev_accuracy > best_accuracy:  # save best model based on dev accuracy
-            best_accuracy = dev_accuracy
             best_model = knn
+            best_metrics = [dev_accuracy, dev_precision, dev_recall, dev_f1]
     # Evaluate best model on the test set
     print("#######################TESTING#######################")
     y_test_pred = best_model.predict(X_test)
@@ -82,7 +83,7 @@ def train(data, output=True, epochs=10):
 
     # plot_confusion_matrix(y_test, y_test_pred, title='Test Set Confusion Matrix')
 
-    return best_model
+    return best_model, best_metrics
 
 
 if __name__ == '__main__':
@@ -93,4 +94,5 @@ if __name__ == '__main__':
     data = data_resampled['100ms']
     data = clean_data(data)
     data = get_data(data, sensors, dataset_level, 'KNN', 10, True, True)
-    model = train(data, epochs=10)
+    model, metrics = train(data, epochs=10)
+    # print(metrics)

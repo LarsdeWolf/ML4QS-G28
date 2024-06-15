@@ -31,11 +31,12 @@ def clean_data(data_list, contamination=0.1, n_neighbors=20):
         # Initial imputation of missing values with mean
         imputer = SimpleImputer(strategy='mean')
         data[numeric_cols] = imputer.fit_transform(data[numeric_cols])
-
         # Apply LOF for outlier detection on each numeric column
         for col in numeric_cols:
+            data_col = data[col].values.reshape(-1, 1)
+            actual_n_neighbors = min(n_neighbors, len(data_col) - 1)
             # Detect outliers using LOF
-            lof = LocalOutlierFactor(n_neighbors=n_neighbors, contamination=contamination)
+            lof = LocalOutlierFactor(n_neighbors=actual_n_neighbors, contamination=contamination)
             is_outlier = lof.fit_predict(data[[col]])
             data.loc[is_outlier == -1, col] = np.nan  # Mark outliers as NaN
 
@@ -86,4 +87,4 @@ if __name__ == '__main__':
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = data_resampled['100ms']
     cleaned_data = clean_data(data, contamination=0.1, n_neighbors=20)
-    plot_data(data[0], cleaned_data[0], "1")
+    # plot_data(data[0], cleaned_data[0], "1")

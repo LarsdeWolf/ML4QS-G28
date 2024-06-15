@@ -99,6 +99,7 @@ def train(data, output=True, epochs=20, lr=1e-3, hidden_size=200, layers=3, labe
     bestdev, best_model, name, steps = 0, None, "", (len(train_dataloader) // 5)
     global debug
     debug = output
+    best_metrics = None
 
     for EPOCH in range(epochs):
         print("#######################TRAIN#######################")
@@ -135,12 +136,14 @@ def train(data, output=True, epochs=20, lr=1e-3, hidden_size=200, layers=3, labe
             name = f"devacc-{round(acc_dev.item(), 4)}_EPOCH-{epochs}_lr-{lr}_hidden-{hidden_size}_layers-{layers}"
             bestdev = acc_dev
             best_model = deepcopy(model.state_dict())
+            best_metrics = [acc_dev, prec_dev, recall_dev, f1_dev]
 
     print("#######################TESTING#######################")
     model.load_state_dict(best_model)
     acc_test, prec_test, recall_test, f1_test = eval(model, test_dataloader)
     print(f"TEST ACCURACY: {acc_test} | TEST PRECISION: {prec_test} | TEST RECALL: {recall_test} | TEST F1: {f1_test}")
-    return model, name
+    # return model, name
+    return model, best_metrics, name
 
 
 if __name__ == '__main__':
@@ -151,7 +154,8 @@ if __name__ == '__main__':
     data = clean_data(data)
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'LSTM', step_size, True, True)
-    model, name = train(data, epochs=1)
+    model, metrics, name = train(data, epochs=1)
+    # print(metrics)
     # torch.save(model.state_dict(), f'models/{name}')
 
 
