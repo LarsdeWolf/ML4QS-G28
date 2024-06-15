@@ -82,5 +82,5 @@ if __name__ == '__main__':
     data = clean_data(data)
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data = get_data(data, sensors, dataset_level, 'DT', 10, True, True)
-    model, metrics = train(data, output=True, epochs=1)
+    model, metrics = train(data, output=True, epochs=10)
     # print(metrics)
