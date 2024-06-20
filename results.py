@@ -105,14 +105,14 @@ if __name__ == '__main__':
     granularities = ['100ms', '500ms', '1s']
     sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
     data_level = 'measurement'
-    models = ['LSTM', 'DT']
+    models = ['DT', 'KNN', 'LSTM']
     if os.path.isfile(f'Results/paramsForModels_{"_".join(models)}.pkl'):
         params = pickle.load(open(f'Results/paramsForModels_{"_".join(models)}.pkl', 'rb'))
     else:
         # We only tune on 100ms granularity and 10 window/sequence (see tuneHyperParameters.py)
         # We could tune on different data_level, but i think we should just stick to measurement and use the same params
         # for activity
-        params = tuneHyperParameters(models, sensors, 'measurement', data_resampled['100ms'], True)
+        params = tuneHyperParameters(models, sensors, 'measurement', clean_data(data_resampled['100ms']), True)
     windows = [5, 10, 50]
     with open('output_measurement_lstm.txt', 'w') as f:
         sys.stdout = f

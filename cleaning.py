@@ -21,6 +21,7 @@ def clean_data(data_list, contamination=0.1, n_neighbors=20):
     cleaned_data_list = []
 
     for data in data_list:
+        data = data.drop(["Location_Velocity (m/s)", "Location_Longitude (°)", "Location_Direction (°)"], axis=1)
         # Identify numeric columns, excluding 'timestamp' if present
         numeric_cols = ['Lin-Acc_X (m/s^2)', 'Lin-Acc_Y (m/s^2)', 'Lin-Acc_Z (m/s^2)',
                         'Location_Latitude (°)', 'Location_Longitude (°)', 'Location_Height (m)',
@@ -30,9 +31,10 @@ def clean_data(data_list, contamination=0.1, n_neighbors=20):
 
         # Initial imputation of missing values with mean
         imputer = SimpleImputer(strategy='mean')
-        data[numeric_cols] = imputer.fit_transform(data[numeric_cols])
+        cols = list(set(data.columns) - {'walk', 'run', 'bike', 'car', 'train','id', 'Time (ns)'})
+        data[cols] = imputer.fit_transform(data[cols])
         # Apply LOF for outlier detection on each numeric column
-        for col in numeric_cols:
+        for col in cols:
             data_col = data[col].values.reshape(-1, 1)
             actual_n_neighbors = min(n_neighbors, len(data_col) - 1)
             # Detect outliers using LOF
@@ -41,7 +43,7 @@ def clean_data(data_list, contamination=0.1, n_neighbors=20):
             data.loc[is_outlier == -1, col] = np.nan  # Mark outliers as NaN
 
         # Final interpolation of missing values
-        data[numeric_cols] = data[numeric_cols].interpolate(method='linear', limit_direction='both')
+        data[cols] = data[cols].interpolate(method='linear', limit_direction='both')
 
         cleaned_data_list.append(data)
 
