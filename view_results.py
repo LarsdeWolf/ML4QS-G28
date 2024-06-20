@@ -82,8 +82,8 @@ def view_results(results_dir):
 
 
 if __name__ == '__main__':
-    results_dir = 'results'
+    results_dir = 'Results'
     best_dir = 'best'
-    view_results(results_dir)
+    #view_results(results_dir)
     view_results(best_dir)
 

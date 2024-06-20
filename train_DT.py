@@ -1,11 +1,9 @@
 from __future__ import print_function
-import builtins
-from load_data import process_data
+from utils import get_data, tuneHyperParameters
 from cleaning import *
-from utils import *
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
-from sklearn.impute import SimpleImputer
+import builtins
 
 debug = True
 def print(*args, **kwargs):
@@ -13,15 +11,16 @@ def print(*args, **kwargs):
              return builtins.print(*args, **kwargs)
 
 
-sensors = ['Accelerometer', 'Lin-Acc', 'Gyroscope', 'Location']
-
-
-def train(data, output=True, epochs=10):
+def train(data, max_depth=10, min_samples_split=4, min_samples_leaf=1, output=True, epochs=10):
     """
     Trains a Decision Tree model on the data
     Evaluates each epoch on DEV set and saves the best model
     Args:
         data: list of X_train, y_train, X_test, y_test, X_val, y_val
+        max_depth:
+        min_samples_split:
+        min_samples_leaf:
+        output:
         epochs: Number of epochs to train
 
     Returns:
@@ -41,9 +40,9 @@ def train(data, output=True, epochs=10):
 
     for epoch in range(epochs):
         print("#######################TRAIN#######################")
-        model = DecisionTreeClassifier(max_depth=10, min_samples_split=4)
+        model = DecisionTreeClassifier(max_depth=max_depth, min_samples_split=min_samples_split,
+                                       min_samples_leaf=min_samples_leaf)
         model.fit(X_train, y_train)
-
         y_train_pred = model.predict(X_train)
         train_acc = accuracy_score(y_train, y_train_pred)
         train_f1 = f1_score(y_train, y_train_pred, average='macro', zero_division=0.0)

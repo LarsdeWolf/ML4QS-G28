@@ -88,9 +88,10 @@ def train(data, output=True, epochs=20, lr=1e-3, hidden_size=200, layers=3, labe
         train_dataloader = DataLoader(MLDataset(X_train, y_train), pin_memory=True, num_workers=4, batch_size=256, shuffle=True)
         test_dataloader = DataLoader(MLDataset(X_test, y_test), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
         dev_dataloader = DataLoader(MLDataset(X_val, y_val), pin_memory=True, num_workers=1, batch_size=64, shuffle=False)
+    n_features = X_train.shape[2]
     del X_train, y_train, X_test, y_test, X_val, y_val
 
-    model = LSTM(16, hidden_size, layers, labels, dropout)
+    model = LSTM(n_features, hidden_size, layers, labels, dropout)
     loss_fn = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
     use_amp = torch.cuda.is_available()

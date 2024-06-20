@@ -4,7 +4,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.impute import SimpleImputer
 from load_data import process_data
-from utils import *
+from utils import get_data
 from cleaning import *
 from sklearn.metrics import confusion_matrix
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ def print(*args, **kwargs):
              return builtins.print(*args, **kwargs)
 
 
-def train(data, output=True, epochs=10):
+def train(data, leaf_size=30, weights='uniform', metric='minkowski', output=True, epochs=10):
     """
     Trains a KNN model on the data
     Evaluates each epoch on DEV set and saves the best model
@@ -48,7 +48,7 @@ def train(data, output=True, epochs=10):
     for epoch in range(epochs):
         print("#######################TRAIN#######################")
         # Initialize the KNN model
-        knn = KNeighborsClassifier(n_neighbors=5)
+        knn = KNeighborsClassifier(n_neighbors=5, leaf_size=leaf_size, weights=weights, metric=metric)
 
         # Train the model
         knn.fit(X_train, y_train)
