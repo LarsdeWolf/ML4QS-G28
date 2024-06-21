@@ -228,6 +228,7 @@ def tuneHyperParameters(models, sensors, dataset_level, data, save=False):
             grid_search = GridSearchCV(classifier, params, cv=kf, scoring='accuracy')
             grid_search.fit(data_model[0], data_model[1])  # Train & Test data
             best_params = grid_search.best_params_
+        print(f"Best parameters for {model}: {best_params}")
         model_params[model] = best_params
 
     # save dict of model params to file
