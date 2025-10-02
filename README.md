@@ -4,7 +4,7 @@ Welcome to **ML4QS-G28**! This repository is the workspace for Group 28's projec
 
 ## Overview
 
-This project explores the application of machine learning techniques to Quantified Self (QS) data. Our goal is to analyze, process, and extract meaningful insights from personal sensor data using machine learning algorithms. For more information, see the report (Report.pdf). 
+This project explores the application of machine learning techniques to Quantified Self (QS) data. Our goal is to analyze, process, and extract meaningful insights from personal sensor data using machine learning algorithms. For more information, see the report (ML4QS_group28_final.pdf). 
 
 ## Features
 - Data visualization, cleaning and preprocessing for various sensor sources
